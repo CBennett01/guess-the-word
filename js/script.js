@@ -1,5 +1,5 @@
 
-const showGuessedLetter = document.querySelector(".guessed-letters"); // The unordered list where the player’s guessed letters will appear.
+const guessedLetterElement = document.querySelector(".guessed-letters"); // The unordered list where the player’s guessed letters will appear.
 const guessButton = document.querySelector(".guess"); // The button with the text “Guess!” in it.
 const letterInputBox = document.querySelector(".letter"); // The text input where the player will guess a letter.
 const wordInProgress = document.querySelector(".word-in-progress"); // The empty paragraph where the word in progress will appear.
@@ -11,16 +11,16 @@ const word = "magnolia";
 const guessedLetters = [];
 
 //Display symbols as placeholders for the chosen word's letters
-const tempDotts = function (word) {
-    const tempDottsLetters = []; //holds the word's letters? 
+const placeholder = function (word) {
+    const placeholderLetters = []; //holds the word's letters? 
     for (const letter of word) { //loops through the array
-        tempDottsLetters.push("●") // pushes the circle to the end of the array
         console.log(letter); 
+        placeholderLetters.push("●") // pushes the circle to the end of the array
     }
-    wordInProgress.innerText = tempDottsLetters.join("");
+    wordInProgress.innerText = placeholderLetters.join("");
+};
 
-}
-tempDotts(word);
+placeholder(word);
 
 guessButton.addEventListener("click", function (e) {
     e.preventDefault(); //keeps from reloading
@@ -34,16 +34,16 @@ guessButton.addEventListener("click", function (e) {
     letterInputBox.value = "";
 });
 
-const guessValidater = function (guess) {
+const guessValidater = function (input) {
     const acceptedLetter = /[a-zA-Z]/;
-    if (guess.length === 0) {
+    if (input.length === 0) {
         message.innerText = "No guess received. Try guessing a letter.";
-    } else if (guess.length > 1) {
+    } else if (input.length > 1) {
         message.innerText = "Try entering only one letter.";
-    } else if (!guess.match(acceptedLetter)) {
+    } else if (!input.match(acceptedLetter)) {
         message.innerText = "Please guess using only a letter.";
     } else {
-        return guess;
+        return input;
     }
 }
 
@@ -54,5 +54,39 @@ const makeGuess = function (guess) {
     } else {
         guessedLetters.push(guess);
         console.log(guessedLetters);
+        displayGuessedLetter();
+        updateWordInProgress(guessedLetters);
+    }
+};
+
+const displayGuessedLetter = function () {
+    guessedLetterElement.innerHTML = "";
+    for (const letter of guessedLetters) {
+        const li = document.createElement("li");
+        li.innerText = letter;
+        guessedLetterElement.append(li);
+    }
+}
+
+
+const updateWordInProgress = function (guessedLetters) {
+    const wordUpper = word.toUpperCase();
+    const  wordArray = wordUpper.split("");
+    const revealWord = [];    
+    for (const letter of wordArray) {
+        if (guessedLetters.includes(letter)) {
+            revealWord.push(letter.toUpperCase());
+        } else {
+            revealWord.push("●");
+        }
+    }
+    wordInProgress.innerText = revealWord.join("");
+    winChecker();
+}
+
+const winChecker = function () {
+    if (word.toUpperCase() === wordInProgress.innerText) {
+        message.classList.add("win");
+        message.innerHTML = `<p class="highlight">You guessed the correct word! Congrats!</p>`;
     }
 };
