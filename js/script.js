@@ -8,9 +8,9 @@ const guessesRemainingSpan = document.querySelector(".remaining span"); // The s
 const message = document.querySelector(".message"); // The empty paragraph where messages will appear when the player guesses a letter.
 const playAgainButton = document.querySelector(".play-again"); // The hidden button that will appear prompting the player to play again.
 
-let word = "magnolia";
-const guessedLetters = [];
-let remainingGuesses = 8;
+let word = "magnolia"; //Starter word before fetching from api library.
+let guessedLetters = []; //Array that holds guessed letters.
+let remainingGuesses = 8; 
 
 const getWord = async function () {
     const response = await fetch ("https://gist.githubusercontent.com/skillcrush-curriculum/7061f1d4d3d5bfe47efbfbcfe42bf57e/raw/5ffc447694486e7dea686f34a6c085ae371b43fe/words.txt");
@@ -111,6 +111,7 @@ const updateGuessesLeft = function (guess) {
 
     if (remainingGuesses === 0) {
         message.innerHTML = `Game over. The word was <span class="highlight">${word}</span>.`;
+        startOver();
     } else if (remainingGuesses === 1) {
         guessesRemainingSpan.innerText = `${remainingGuesses} guess`;
     } else {
@@ -122,6 +123,32 @@ const winChecker = function () {
     if (word.toUpperCase() === wordInProgress.innerText) {
         message.classList.add("win");
         message.innerHTML = `<p class="highlight">You guessed the correct word! Congrats!</p>`;
+        
+        startOver();
     }
 };
+
+const startOver = function () {
+    guessButton.classList.add("hide");
+    guessesRemainingElement.classList.add("hide");
+    guessedLetterElement.classList.add("hide");
+    playAgainButton.classList.remove("hide");
+  };
+
+  playAgainButton.addEventListener("click", function() {   // reset all original values - grab new word
+    message.classList.remove("win");
+    message.InnerText = ""; //empties message paragraph
+    guessedLetters = [];
+    remainingGuesses = 8;
+    guessesRemainingSpan.innerText = `${remainingGuesses} guesses`;
+    guessedLetterElement.innerHTML = ""; //empties unordered list where guess letters appear.
+    message.innerText = "";
+    getWord();//Get new word.
+
+    // show the right UI elements
+    guessButton.classList.remove("hide");
+    playAgainButton.classList.add("hide");
+    guessesRemainingElement.classList.remove("hide");
+    guessedLetterElement.classList.remove("hide");
+});
 
